@@ -1,6 +1,6 @@
 #Author: Matheus Felipe Eduardo Barbosa
 
-TP3: main.o internal_sorting.o solutions.o 
+TP3: main.o internal_sorting.o solutions.o
 	gcc main.o internal_sorting.o solutions.o -o TP3 -Wall -Wextra -Werror -std=c99 -pedantic
 main.o: main.c
 		gcc -c main.c -Wall -Wextra -Werror -std=c99 -pedantic
