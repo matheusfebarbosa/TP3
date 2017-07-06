@@ -7,6 +7,23 @@ int verifyConflict(Edge a, Edge b){
 	return 0;
 }
 
+void readInput(Edge *flagLines, int n){
+	int a,b,i;
+
+
+	for(i=0; i<n; i++){
+		scanf("%d%d",&a,&b);
+		if(a%2==0){
+			flagLines[i].va = a;
+			flagLines[i].vb = b;
+		}else{
+			flagLines[i].va = b;
+			flagLines[i].vb = a;
+		}
+		flagLines[i].conflicts = 0;
+	}
+}
+
 int dinamico(){
 	int *rua1, *rua2;
 	int *maiorSequencia;
@@ -48,25 +65,8 @@ int dinamico(){
 	return max;
 }
 
-int guloso(){
-	int n,a,b,i,j,ibig;
-	Edge *flagLines;
-
-	scanf("%d",&n);
-
-	flagLines = calloc(n,sizeof(Edge));
-
-	for(i=0; i<n; i++){
-		scanf("%d%d",&a,&b);
-		if(a%2==0){
-			flagLines[i].va = a;
-			flagLines[i].vb = b;
-		}else{
-			flagLines[i].va = b;
-			flagLines[i].vb = a;
-		}
-		flagLines[i].conflicts = 0;
-	}
+int guloso(Edge *flagLines, int n){
+	int i,j,ibig;
 
 	for(i=0;i<n; i++){
 		for(j=i+1;j<n;j++){
@@ -107,7 +107,8 @@ int guloso(){
 	return n;
 }
 
-int forca_bruta(){
 
+int forca_bruta(Edge *flagLines, int n){
+	
 	return 0;
 }
