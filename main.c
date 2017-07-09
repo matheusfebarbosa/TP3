@@ -11,11 +11,11 @@ int main(){
 
 	flagLines = calloc(n,sizeof(Edge));
 
-	readInput(flagLines,n);
+	readGraph(flagLines,n);
 	
 	switch(algType){
 		case 'd':
-			printf("%d\n",dinamico());
+			printf("%d\n",dinamico(flagLines,n));
 			break;
 		case 'g':
 			printf("%d\n",guloso(flagLines,n));
@@ -27,6 +27,8 @@ int main(){
 			printf("Opção inválida\n");
 			break;
 	}
+
+	free(flagLines);
 
 	return 0;
 }

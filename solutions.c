@@ -1,68 +1,42 @@
 #include "solutions.h"
 
-int verifyConflict(Edge a, Edge b){
-	if((a.va < b.va && a.vb > b.vb) || (b.va < a.va && b.vb > a.vb)){
-		return 1;
-	}
-	return 0;
-}
-
-void readInput(Edge *flagLines, int n){
-	int a,b,i;
-
-
-	for(i=0; i<n; i++){
-		scanf("%d%d",&a,&b);
-		if(a%2==0){
-			flagLines[i].va = a;
-			flagLines[i].vb = b;
-		}else{
-			flagLines[i].va = b;
-			flagLines[i].vb = a;
-		}
-		flagLines[i].conflicts = 0;
-	}
-}
-
-int dinamico(){
-	int *rua1, *rua2;
+int dinamico(Edge *flagLines, int n){
 	int *maiorSequencia;
-	int n,a,b,i,j,max=0;
+	int i,j,start,end,middle;
 
-	scanf("%d",&n);
-
-	rua1 = calloc(n,sizeof(int));
-	rua2 = calloc(n,sizeof(int));
 	maiorSequencia = calloc(n,sizeof(int));
 
 	for(i=0; i<n; i++){
-		scanf("%d%d",&a,&b);
-		if(a%2==0){
-			rua1[i] = a;
-			rua2[i] = b;
-		}else{
-			rua1[i] = b;
-			rua2[i] = a;
-		}
 		maiorSequencia[i]=1;
 	}	
 
-	heapSort(rua1, rua2, n);
+	heapSort(flagLines, n);
 
-	for(i=1;i<n;i++)
-		for(j=0;j<i;j++)
-			if(rua2[i]>rua2[j] && maiorSequencia[i]<maiorSequencia[j]+1)
-				maiorSequencia[i] = maiorSequencia[j] + 1;
-
-	for(i=0;i<n;i++)
-		if(max<maiorSequencia[i])
-			max = maiorSequencia[i];
+    j=1;
+    maiorSequencia[0] = flagLines[0].vb;
+    for (i = 1; i < n; i++) {
+        if (flagLines[i].vb < maiorSequencia[0]){
+            maiorSequencia[0] = flagLines[i].vb;
+        }else if (flagLines[i].vb  > maiorSequencia[j-1]){
+            maiorSequencia[j++] = flagLines[i].vb;
+        }else{
+        	start=-1;
+        	end=j-1;
+        	while(end-start>1){
+        		middle = start + (end-start)/2;
+        		if(maiorSequencia[middle] < flagLines[i].vb){
+        			start = middle; 
+        		}else{
+        			end = middle;
+        		}
+        	}
+        	maiorSequencia[end] = flagLines[i].vb;
+        }
+    }
 
 	free(maiorSequencia);
-	free(rua1);
-	free(rua2);
 
-	return max;
+	return j;
 }
 
 int guloso(Edge *flagLines, int n){
@@ -73,12 +47,10 @@ int guloso(Edge *flagLines, int n){
 			if(verifyConflict(flagLines[i],flagLines[j])){
 				flagLines[i].conflicts++;
 				flagLines[j].conflicts++;
-				//printf("Conflito: par %d e par %d\n", i,j);
 			}
 		}
 	}
 
-	//printf("\n");
 	while(n){
 		ibig = 0;
 		for(i=1; i<n; i++){
@@ -91,7 +63,6 @@ int guloso(Edge *flagLines, int n){
 			break;
 		}
 		
-		//printf("Par com mais conflitos: (%d,%d)\n",flagLines[ibig].va,flagLines[ibig].vb);
 
 		for(i=0; i<n; i++){
 			if(i!=ibig && verifyConflict(flagLines[ibig],flagLines[i])){
@@ -103,12 +74,48 @@ int guloso(Edge *flagLines, int n){
 		n--;
 	}
 
-	free(flagLines);
 	return n;
+}
+
+int try_options(Edge *flagLines, int *solution, int i, int n){
+	if(i==n){
+		int j,k,sum=0;
+		
+		for(k=0; k<n; k++)
+			if(solution[k] == 1)
+				for(j=k+1;j<n;j++)
+					if(solution[j] ==1 && verifyConflict(flagLines[k],flagLines[j]))
+						return 0;
+		
+		for(k=0; k<n; k++)
+			sum += solution[k];
+
+		return sum;
+	}
+
+	int opA,opB;
+
+	solution[i] = 0;
+	opA = try_options(flagLines,solution,i+1,n);
+
+	solution[i] = 1;
+	opB = try_options(flagLines,solution,i+1,n);
+
+	if(opA > opB)
+		return opA;
+	else
+		return opB;
 }
 
 
 int forca_bruta(Edge *flagLines, int n){
-	
-	return 0;
+	int *solution;
+	int ret;
+	solution = calloc(n,sizeof(int));
+
+	ret = try_options(flagLines,solution,0,n);
+
+	free(solution);
+
+	return ret;
 }

@@ -1,49 +1,44 @@
 #include "internal_sorting.h"
 
-void maxHeapify(int *va, int *vb, int n, int father){
+void maxHeapify(Edge *edges, int n, int father){
 	int son;
-	int auxa,auxb;
+	Edge aux;
 	
 	son= 2*father +1;
-	auxa = va[father];
-	auxb = vb[father];
+	aux = edges[father];
 
 	while(son<n){
-		if(son+1<n && (va[son]<va[son+1] || (va[son]==va[son+1] && vb[son]<vb[son+1]))){
+		if(son+1<n && (edges[son].va<edges[son+1].va 
+			|| (edges[son].va==edges[son+1].va && edges[son].vb<edges[son+1].vb))){
 			son++;
 		}
 
-		if(auxa<va[son] || (auxa==va[son] && auxb<vb[son])){
-			va[father] = va[son];
-			vb[father] = vb[son];
+		if(aux.va < edges[son].va || (aux.va==edges[son].va && aux.vb<edges[son].vb)){
+			edges[father] = edges[son];
 			father = son;
 			son = 2*father +1;
 		}else{
 			break;
 		}
-		va[father] = auxa;
-		vb[father] = auxb;
+		edges[father] = aux;
 	}
 }
 
-void buildHeap(int *va, int *vb, int n){
+void buildHeap(Edge *edges, int n){
 	int i;
 	for(i=n/2; i>=0; i--){
-		maxHeapify(va,vb,n,i);
+		maxHeapify(edges,n,i);
 	}	
 }
 
-void heapSort(int *va, int *vb, int n){
-	int auxa,auxb;
-	buildHeap(va,vb, n);
+void heapSort(Edge *edges, int n){
+	Edge aux;
+	buildHeap(edges, n);
 	while(n>1){
-		auxa = va[n-1];
-		auxb = vb[n-1];
-		va[n-1] = va[0];
-		vb[n-1] = vb[0];
-		va[0] = auxa;
-		vb[0] = auxb;
+		aux = edges[n-1];
+		edges[n-1] = edges[0];
+		edges[0] = aux;
 		n--;
-		maxHeapify(va,vb, n, 0);
+		maxHeapify(edges, n, 0);
 	}
 }
